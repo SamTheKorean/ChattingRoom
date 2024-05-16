@@ -11,9 +11,15 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
-
+import os
+import django
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+
+# os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'your_project.settings')
+# # Configure Django settings
+# django.setup()
 
 
 # Quick-start development settings - unsuitable for production
@@ -27,16 +33,30 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+#enable django channels by configuring the ASGI application in your settings
+ASGI_APPLICATION = "ChattingRoom.asgi.application"
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("127.0.0.1", 6379)],
+        },
+    },
+}
+
 
 # Application definition
 
 INSTALLED_APPS = [
+    "chat",
+    'daphne',
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    
 ]
 
 MIDDLEWARE = [
@@ -49,12 +69,13 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
+
 ROOT_URLCONF = "ChattingRoom.urls"
 
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": [BASE_DIR / 'templates/',],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -67,8 +88,21 @@ TEMPLATES = [
     },
 ]
 
+STATIC_URL = '/static/'
+
+# Define the directories where Django will look for static files.
+STATICFILES_DIRS = [
+    BASE_DIR / 'static'
+]
+
 WSGI_APPLICATION = "ChattingRoom.wsgi.application"
 
+AUTHENTICATION_BACKENDS = [
+    "django.contrib.auth.backends.ModelBackend",
+    "sesame.backends.ModelBackend",
+]
+
+SESAME_MAX_AGE = 30
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
