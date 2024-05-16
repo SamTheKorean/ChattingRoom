@@ -35,7 +35,14 @@ ALLOWED_HOSTS = []
 
 #enable django channels by configuring the ASGI application in your settings
 ASGI_APPLICATION = "ChattingRoom.asgi.application"
-
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("127.0.0.1", 6379)],
+        },
+    },
+}
 
 
 # Application definition
